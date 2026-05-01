@@ -3,10 +3,17 @@ const path = require('path');
 const bodyParser = require("body-parser");
 const session = require("express-session");
 const bcrypt = require("bcrypt");
-const fs = require('fs/promises');
 const config = require("./config.js");
 const userModel = require("./user-model.js");
-const { writeJSON, readJSON, normalizeMovieData, loadAllMovies, getAllMovies, getMovie, addMovie, removeMovie } = require('./movie-model.js');
+const {
+  saveMovieFile,
+  normalizeMovieData,
+  loadAllMovies,
+  getAllMovies,
+  getMovie,
+  addMovieToUserCollection,
+  removeMovieFromUserCollection
+} = require('./movie-model.js');
 
 const app = express()
 
@@ -116,8 +123,8 @@ app.put('/movies/:imdbID', requireLogin, async function (req, res) {
     const existingMovie = getMovie(null, imdbID);
     const fileExists = existingMovie !== null;
 
-    // writeJSON also updates the cache
-    await writeJSON(`${imdbID}.json`, movie);
+    // saveMovieFile also updates the cache
+    await saveMovieFile(`${imdbID}.json`, movie);
 
     if (fileExists) {
       res.status(200).json({ status: 'success', message: 'Movie updated successfully' });
@@ -134,7 +141,7 @@ app.delete("/movies/:imdbID", requireLogin, async function (req, res) {
   try {
     const username = req.session.user?.username;
     const imdbID = req.params.imdbID;
-    const removed = await removeMovie(imdbID, username);
+    const removed = await removeMovieFromUserCollection(imdbID, username);
 
     if (!removed) {
       return res.status(404).json({ error: 'Movie not found' });
@@ -221,11 +228,11 @@ app.post('/fetch-new-movie', requireLogin, async function (req, res) {
       // normalize and save movie data to JSON file
       movie = normalizeMovieData(data);
 
-      await writeJSON(`${imdbID}.json`, movie);
+      await saveMovieFile(`${imdbID}.json`, movie);
     }
 
     // add Movie to Users Movies
-    await addMovie(imdbID, movie, username);
+    await addMovieToUserCollection(imdbID, movie, username);
 
     res.status(201).json({ "status": "success", "msg": "Movie added successfully" });
   } catch (err) {

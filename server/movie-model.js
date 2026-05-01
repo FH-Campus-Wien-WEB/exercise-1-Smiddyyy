@@ -1,9 +1,6 @@
-const express = require('express')
-const path = require('path')
 const fs = require('fs/promises');
 const config = require("./config.js");
 const userModel = require("./user-model.js");
-require('dotenv').config();
 
 // ---------------
 // In-memory movie cache
@@ -73,13 +70,13 @@ function getAllMovies(username) {
 // Get a single movie from cache by imdbID
 function getMovie(username, imdbID) {
   if (username) {
-    return movieCache[username][imdbID] || null;
+    return movieCache[username]?.[imdbID] || null;
   }
 
-  return movieCache["admin"][imdbID] || null;
+  return movieCache["admin"]?.[imdbID] || null;
 }
 
-// Update a movie in cache (used after writeJSON)
+// Update a movie in cache (used after saveMovieFile)
 function setMovie(imdbID, movie) {
   for (const username in userModel) {
     const keys = Object.keys(movieCache[username]);
@@ -90,7 +87,7 @@ function setMovie(imdbID, movie) {
 }
 
 // Add Movie for User
-async function addMovie(imdbID, movie, username) {
+async function addMovieToUserCollection(imdbID, movie, username) {
   if (!username || !userModel[username]) {
     return false;
   }
@@ -114,7 +111,7 @@ async function addMovie(imdbID, movie, username) {
 }
 
 // Remove Movie for User
-async function removeMovie(imdbID, username) {
+async function removeMovieFromUserCollection(imdbID, username) {
   if (!username || !userModel[username]) {
     return false;
   }
@@ -155,8 +152,8 @@ async function writeUsers() {
   await fs.writeFile(config.usersFile, JSON.stringify(userModel, null, 4));
 }
 
-async function writeJSON(filename, data) {
-  await fs.mkdir('data', { recursive: true });
+async function saveMovieFile(filename, data) {
+  await fs.mkdir('data/movies', { recursive: true });
   await fs.writeFile(`data/movies/${filename}`, JSON.stringify(data, null, 2));
   // Update cache after writing
   if (data.imdbID) {
@@ -164,7 +161,7 @@ async function writeJSON(filename, data) {
   }
 }
 
-async function readJSON(filename) {
+async function readMovieFile(filename) {
   try {
     const raw = await fs.readFile(`data/movies/${filename}`, 'utf-8');
     const data = JSON.parse(raw);
@@ -197,9 +194,9 @@ module.exports = {
   getAllMovies,
   getMovie,
   setMovie,
-  addMovie,
-  removeMovie,
-  writeJSON,
-  readJSON,
+  addMovieToUserCollection,
+  removeMovieFromUserCollection,
+  saveMovieFile,
+  readMovieFile,
   normalizeMovieData
 };
