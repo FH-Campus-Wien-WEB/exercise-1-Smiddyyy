@@ -29,11 +29,11 @@ body>footer {
   grid-area: footer;
 }
 
-body.sidebar-closed {
+body.is-sidebar-closed {
   grid-template-columns: 0px 1fr;
 }
 
-body.sidebar-closed aside {
+body.is-sidebar-closed aside {
   padding: 0 !important;
   border: none;
 }
@@ -63,13 +63,13 @@ body>footer {
 }
 
 /* ===== Header Controls ===== */
-#page-title {
+#app-title {
   margin: 40px auto 30px;
   font-size: 3rem;
   text-align: center;
 }
 
-#menu-toggle {
+#sidebar-open-button {
   margin-left: 20px;
   border: none;
   background: none;
@@ -79,11 +79,11 @@ body>footer {
 }
 
 /* ===== Session Greeting ===== */
-#user-greeting {
+#session-toast {
   display: none;
 }
 
-#user-greeting.show {
+#session-toast.session-toast--show {
   position: fixed;
   top: 18px;
   right: 18px;
@@ -99,32 +99,32 @@ body>footer {
   animation: greetingSlideIn 0.4s ease-out;
 }
 
-#user-greeting.hide {
+#session-toast.session-toast--hide {
   animation: greetingSlideOut 0.5s ease-in forwards;
 }
 
-#user-greeting.hide.finished {
+#session-toast.session-toast--hide.finished {
   display: none;
 }
 
-.greeting-title {
+.session-toast__title {
   margin: 0 0 6px;
   font-size: 1.1rem;
   font-weight: 800;
   color: #1f1f2e;
 }
 
-.greeting-name {
+.session-toast__name {
   color: #5a2d82;
 }
 
-.greeting-user {
+.session-toast__user {
   margin: 0;
   font-size: 0.9rem;
   color: #666;
 }
 
-.greeting-time {
+.session-toast__time {
   margin: 10px 0 0;
   font-size: 0.8rem;
   color: #888;

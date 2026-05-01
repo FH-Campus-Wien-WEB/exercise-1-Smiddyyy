@@ -7,34 +7,34 @@ body>aside {
         "header"
         "title"
         "genre"
-        "manage";
+        "sidebar-actions";
 }
 
 #sidebar-header {
     grid-area: header;
 }
 
-#search-filter {
+#movie-search {
     grid-area: title;
 }
 
-#genre-filters {
+#genre-filter-panel {
     grid-area: genre;
 }
 
-#manage {
-    grid-area: manage;
+#sidebar-actions {
+    grid-area: sidebar-actions;
 }
 
 /* ===== Sidebar Shell ===== */
-#filter-sidebar {
+#sidebar {
     background: #f9fafb;
     border-right: 1px solid #e5e7eb;
     padding: 16px 14px;
     overflow: hidden;
 }
 
-body.sidebar-closed #filter-sidebar {
+body.is-sidebar-closed #sidebar {
     border: none;
 }
 
@@ -44,7 +44,7 @@ body.sidebar-closed #filter-sidebar {
     align-items: center;
 }
 
-#close-sidebar {
+#sidebar-close-button {
     font-size: 1.8rem;
     background: transparent;
     border: none;
@@ -53,17 +53,17 @@ body.sidebar-closed #filter-sidebar {
     transition: transform 0.2s ease, color 0.2s ease;
 }
 
-#close-sidebar:hover {
+#sidebar-close-button:hover {
     color: #4d1a51;
     transform: scale(1.1);
 }
 
 /* ===== Sidebar Search ===== */
-#search-filter {
+#movie-search {
     padding: 4px 0;
 }
 
-#search-filter>div {
+#movie-search>div {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -75,12 +75,12 @@ body.sidebar-closed #filter-sidebar {
     transition: all 0.2s ease;
 }
 
-#search-filter>div:focus-within {
+#movie-search>div:focus-within {
     border-color: #832197ab;
     box-shadow: 0 0 0 3px rgba(131, 33, 151, 0.18);
 }
 
-#search-input {
+#movie-search-input {
     flex: 1;
     border: none;
     outline: none;
@@ -89,17 +89,17 @@ body.sidebar-closed #filter-sidebar {
     font-size: 1rem;
 }
 
-#search-input::placeholder {
+#movie-search-input::placeholder {
     color: #9ca3af;
 }
 
-#search-filter svg {
+#movie-search svg {
     flex-shrink: 0;
     color: #6b7280;
 }
 
 /* ===== Genre Filters ===== */
-#genre-filters {
+#genre-filter-panel {
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -107,27 +107,27 @@ body.sidebar-closed #filter-sidebar {
     overflow-y: auto;
 }
 
-#genre-filters h2 {
+#genre-filter-panel h2 {
     margin-top: 0;
     color: #111827;
     font-size: 1rem;
 }
 
-#genre-filters hr {
+#genre-filter-panel hr {
     height: 1px;
     margin: 6px 0;
     border: 0;
     background: #e5e7eb;
 }
 
-#available-filters,
-#active-filters {
+#available-genre-filters,
+#active-genre-filters {
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
 }
 
-.filter-btn {
+.genre-filter {
     display: inline-block;
     padding: 4px 12px;
     border-radius: 999px;
@@ -136,25 +136,25 @@ body.sidebar-closed #filter-sidebar {
     transition: all 0.2s ease;
 }
 
-.filter-btn.available-filter {
+.genre-filter.genre-filter--available {
     background: #dfdcef;
     color: #374151;
     cursor: pointer;
 }
 
-.filter-btn.available-filter:hover {
+.genre-filter.genre-filter--available:hover {
     transform: translateY(-2px);
     background: #c4b9e0;
     box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
 }
 
-.filter-btn.active-filter {
+.genre-filter.genre-filter--active {
     background: #712f71;
     color: white;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
-.remove-filter {
+.genre-filter__remove {
     margin-left: 4px;
     color: #e5e7eb;
     font-size: 0.85rem;
@@ -162,19 +162,19 @@ body.sidebar-closed #filter-sidebar {
     transition: color 0.2s ease;
 }
 
-.remove-filter:hover {
+.genre-filter__remove:hover {
     color: #ffffff;
 }
 
 /* ===== Sidebar Actions ===== */
-#manage {
+#sidebar-actions {
     display: flex;
     flex-direction: column;
     gap: 10px;
     margin-top: 12px;
 }
 
-#manage button {
+#sidebar-actions button {
     padding: 10px;
     border: none;
     border-radius: 999px;
@@ -183,18 +183,18 @@ body.sidebar-closed #filter-sidebar {
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-#addBtn {
+#add-movie-button {
     background: #712f71;
     color: white;
 }
 
-#authBtn {
+#logout-button {
     background: #e5e7eb;
     color: #374151;
 }
 
-#addBtn:hover,
-#authBtn:hover {
+#add-movie-button:hover,
+#logout-button:hover {
     transform: translateY(-2px);
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
 }

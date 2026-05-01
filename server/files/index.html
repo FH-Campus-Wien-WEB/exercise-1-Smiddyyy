@@ -13,22 +13,22 @@
     <script src="index.js"></script>
 </head>
 
-<body class="sidebar-closed">
+<body class="is-sidebar-closed">
     <header>
-        <button id="menu-toggle" aria-label="Open filters">☰</button>
-        <h1 id="page-title">Movies!</h1>
-        <div id="user-greeting"></div>
+        <button id="sidebar-open-button" aria-label="Open filters">☰</button>
+        <h1 id="app-title">Movies!</h1>
+        <div id="session-toast"></div>
     </header>
-    <main id="movie-card-container" class="scrollable">
+    <main id="movie-grid" class="scrollable">
 
     </main>
-    <aside id="filter-sidebar">
+    <aside id="sidebar">
         <div id="sidebar-header">
-            <button id="close-sidebar" aria-label="Close filters">×</button>
+            <button id="sidebar-close-button" aria-label="Close filters">×</button>
         </div>
-        <div id="search-filter">
+        <div id="movie-search">
             <div>
-                <input type="text" id="search-input" placeholder="Search by title" />
+                <input type="text" id="movie-search-input" placeholder="Search by title" />
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search"
                     viewBox="0 0 16 16">
                     <path
@@ -36,16 +36,16 @@
                 </svg>
             </div>
         </div>
-        <div id="genre-filters">
+        <div id="genre-filter-panel">
             <h2>Genres:</h2>
-            <div id="active-filters"></div>
+            <div id="active-genre-filters"></div>
             <hr>
-            <div id="available-filters"></div>
+            <div id="available-genre-filters"></div>
         </div>
-        <div id="manage">
+        <div id="sidebar-actions">
             <!-- TODO -->
-            <button id="addBtn">Add Movie</button>
-            <button id="authBtn">Logout</button>
+            <button id="add-movie-button">Add Movie</button>
+            <button id="logout-button">Logout</button>
         </div>
     </aside>
     <footer>
@@ -53,8 +53,8 @@
     </footer>
 
     <!-- Login Dialog -->
-    <dialog id="loginDialog">
-        <form id="loginForm">
+    <dialog id="login-dialog">
+        <form id="login-form">
             <label for="username">Username:</label>
             <input type="text" id="username" name="username" required>
             <label for="password">Password:</label>
@@ -64,17 +64,17 @@
     </dialog>
 
     <!-- Search Dialog -->
-    <dialog id="addMovieDialog">
+    <dialog id="add-movie-dialog">
         <div>
-            <div class="add-movie-search">
-                <input type="text" id="addMovieDialog-search-input" placeholder="Search by title" />
+            <div class="add-movie-dialog__search">
+                <input type="text" id="add-movie-search-input" placeholder="Search by title" />
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                     class="bi bi-search" viewBox="0 0 16 16">
                     <path
                         d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
                 </svg>
             </div>
-            <div id="addMovieDialog-suggestions">
+            <div id="add-movie-results">
 
             </div>
         </div>

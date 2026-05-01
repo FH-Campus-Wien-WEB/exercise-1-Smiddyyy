@@ -23,20 +23,20 @@ function initApp() {
 
 function cacheElements() {
     elements.body = document.body;
-    elements.loginDialog = document.getElementById("loginDialog");
-    elements.addMovieDialog = document.getElementById("addMovieDialog");
-    elements.loginForm = document.getElementById("loginForm");
-    elements.searchInput = document.getElementById("search-input");
-    elements.sidebarToggleButton = document.getElementById("menu-toggle");
-    elements.sidebarCloseButton = document.getElementById("close-sidebar");
-    elements.authButton = document.getElementById("authBtn");
-    elements.addMovieButton = document.getElementById("addBtn");
-    elements.movieCardContainer = document.getElementById("movie-card-container");
-    elements.addMovieSearchInput = document.getElementById("addMovieDialog-search-input");
-    elements.addMovieSuggestions = document.getElementById("addMovieDialog-suggestions");
-    elements.activeFilters = document.getElementById("active-filters");
-    elements.availableFilters = document.getElementById("available-filters");
-    elements.userGreeting = document.getElementById("user-greeting");
+    elements.loginDialog = document.getElementById("login-dialog");
+    elements.addMovieDialog = document.getElementById("add-movie-dialog");
+    elements.loginForm = document.getElementById("login-form");
+    elements.movieSearchInput = document.getElementById("movie-search-input");
+    elements.sidebarOpenButton = document.getElementById("sidebar-open-button");
+    elements.sidebarCloseButton = document.getElementById("sidebar-close-button");
+    elements.logoutButton = document.getElementById("logout-button");
+    elements.addMovieButton = document.getElementById("add-movie-button");
+    elements.movieGrid = document.getElementById("movie-grid");
+    elements.addMovieSearchInput = document.getElementById("add-movie-search-input");
+    elements.addMovieResults = document.getElementById("add-movie-results");
+    elements.activeGenreFilters = document.getElementById("active-genre-filters");
+    elements.availableGenreFilters = document.getElementById("available-genre-filters");
+    elements.sessionToast = document.getElementById("session-toast");
 }
 
 function bindEvents() {
@@ -47,10 +47,10 @@ function bindEvents() {
     });
 
     elements.loginForm.addEventListener("submit", handleLogin);
-    elements.authButton.addEventListener("click", handleLogout);
+    elements.logoutButton.addEventListener("click", handleLogout);
 
     elements.sidebarCloseButton.addEventListener("click", closeSidebar);
-    elements.sidebarToggleButton.addEventListener("click", openSidebar);
+    elements.sidebarOpenButton.addEventListener("click", openSidebar);
 
     elements.addMovieButton.addEventListener("click", () => {
         elements.addMovieDialog.showModal();
@@ -68,7 +68,7 @@ function bindEvents() {
         }
     });
 
-    elements.searchInput.addEventListener("keyup", loadMovies);
+    elements.movieSearchInput.addEventListener("keyup", loadMovies);
 }
 
 // ---------------
@@ -113,7 +113,7 @@ async function handleLogin(event) {
 
     state.currentSession = await response.json();
     state.pauseScroll = true;
-    elements.movieCardContainer.scrollTop = 0;
+    elements.movieGrid.scrollTop = 0;
     elements.loginDialog.close();
 
     renderAppState();
@@ -130,7 +130,7 @@ async function handleLogout() {
         state.currentSession = null;
         state.activeGenreFilters = [];
         state.pauseScroll = false;
-        elements.searchInput.value = "";
+        elements.movieSearchInput.value = "";
 
         renderAppState();
         showLogoutGreeting();
@@ -144,24 +144,24 @@ function renderAppState() {
     renderGenreFilters();
 
     if (state.currentSession) {
-        elements.body.classList.remove("sidebar-closed");
-        elements.sidebarToggleButton.setAttribute("hidden", "");
-        elements.movieCardContainer.classList.remove("blurred");
+        elements.body.classList.remove("is-sidebar-closed");
+        elements.sidebarOpenButton.setAttribute("hidden", "");
+        elements.movieGrid.classList.remove("movie-grid--blurred");
         state.pauseScroll = true;
         return;
     }
 
-    elements.body.classList.add("sidebar-closed");
-    elements.sidebarToggleButton.removeAttribute("hidden");
-    elements.movieCardContainer.classList.add("blurred");
+    elements.body.classList.add("is-sidebar-closed");
+    elements.sidebarOpenButton.removeAttribute("hidden");
+    elements.movieGrid.classList.add("movie-grid--blurred");
     state.pauseScroll = false;
     elements.loginForm.reset();
     elements.loginDialog.showModal();
 }
 
 function showLogoutGreeting() {
-    elements.userGreeting.innerHTML = `
-        <p class="greeting-title">See you soon!</p>
+    elements.sessionToast.innerHTML = `
+        <p class="session-toast__title">See you soon!</p>
     `;
     showGreeting(3000);
 }
@@ -174,26 +174,26 @@ function showLoginGreeting() {
     const loginDate = new Date(state.currentSession.loginTime);
     const formattedTime = loginDate.toLocaleString();
 
-    elements.userGreeting.innerHTML = `
-        <p class="greeting-title">
-            Welcome, <span class="greeting-name">${state.currentSession.firstName} ${state.currentSession.lastName}</span>!
+    elements.sessionToast.innerHTML = `
+        <p class="session-toast__title">
+            Welcome, <span class="session-toast__name">${state.currentSession.firstName} ${state.currentSession.lastName}</span>!
         </p>
-        <p class="greeting-user">@${state.currentSession.username}</p>
-        <p class="greeting-time">Logged in at: ${formattedTime}</p>
+        <p class="session-toast__user">@${state.currentSession.username}</p>
+        <p class="session-toast__time">Logged in at: ${formattedTime}</p>
     `;
     showGreeting(10000);
 }
 
 function showGreeting(durationMs) {
-    elements.userGreeting.style.display = "block";
-    elements.userGreeting.classList.add("show");
+    elements.sessionToast.style.display = "block";
+    elements.sessionToast.classList.add("session-toast--show");
 
     setTimeout(() => {
-        elements.userGreeting.classList.add("hide");
+        elements.sessionToast.classList.add("session-toast--hide");
 
         setTimeout(() => {
-            elements.userGreeting.classList.remove("show", "hide");
-            elements.userGreeting.style.display = "none";
+            elements.sessionToast.classList.remove("session-toast--show", "session-toast--hide");
+            elements.sessionToast.style.display = "none";
         }, 500);
     }, durationMs);
 }
@@ -205,7 +205,7 @@ function showGreeting(durationMs) {
 async function loadMovies() {
     const params = new URLSearchParams({
         genre: state.activeGenreFilters.join(","),
-        title: elements.searchInput.value
+        title: elements.movieSearchInput.value
     });
 
     try {
@@ -239,17 +239,17 @@ function updateAvailableGenres(movies) {
 }
 
 function renderMovieLoadError(status, statusText) {
-    elements.movieCardContainer.innerHTML = "";
+    elements.movieGrid.innerHTML = "";
 
     const errorMessage = document.createElement("p");
     errorMessage.textContent = `Daten konnten nicht geladen werden, Status ${status} - ${statusText}`;
-    elements.movieCardContainer.append(errorMessage);
+    elements.movieGrid.append(errorMessage);
 }
 
 function renderMovieCards(movies) {
-    elements.movieCardContainer.innerHTML = "";
+    elements.movieGrid.innerHTML = "";
     movies.forEach((movie, movieIndex) => {
-        elements.movieCardContainer.append(createMovieCard(movie, movieIndex));
+        elements.movieGrid.append(createMovieCard(movie, movieIndex));
     });
 }
 
@@ -262,11 +262,11 @@ function createMovieCard(movie, movieIndex) {
     article.append(createMovieMetadata(movie));
 
     const movieDetails = document.createElement("div");
-    movieDetails.classList.add("movie-details");
+    movieDetails.classList.add("movie-card__details");
     article.append(movieDetails);
 
     const expandButton = document.createElement("button");
-    expandButton.classList.add("expand-btn");
+    expandButton.classList.add("movie-card__expand-button");
     expandButton.textContent = "show details";
     expandButton.addEventListener("click", () => toggleMovieDetails(expandButton));
     article.append(expandButton);
@@ -281,7 +281,7 @@ function createMovieHeader(movie) {
     const header = document.createElement("header");
 
     const titleRow = document.createElement("div");
-    titleRow.classList.add("title-row");
+    titleRow.classList.add("movie-card__title-row");
 
     const title = document.createElement("h2");
     title.textContent = movie.title;
@@ -296,11 +296,11 @@ function createMovieHeader(movie) {
 
 function createMovieMenu(movie) {
     const movieMenu = document.createElement("div");
-    movieMenu.classList.add("movie-menu");
+    movieMenu.classList.add("movie-card__menu");
 
     const menuButton = document.createElement("button");
     menuButton.id = `${movie.imdbID}-menu`;
-    menuButton.classList.add("movie-menu-btn");
+    menuButton.classList.add("movie-card__menu-button");
     menuButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
         <circle cx="8" cy="3" r="1.5"/>
         <circle cx="8" cy="8" r="1.5"/>
@@ -310,12 +310,12 @@ function createMovieMenu(movie) {
     menuButton.setAttribute("title", `Actions for ${movie.title}`);
 
     const menuOptions = document.createElement("div");
-    menuOptions.classList.add("movie-menu-options");
+    menuOptions.classList.add("movie-card__menu-options");
     menuOptions.setAttribute("hidden", "");
 
     const editButton = document.createElement("button");
     editButton.id = `${movie.imdbID}-edit`;
-    editButton.classList.add("movie-menu-option");
+    editButton.classList.add("movie-card__menu-option");
     editButton.type = "button";
     editButton.textContent = "Edit";
     editButton.addEventListener("click", () => {
@@ -325,7 +325,7 @@ function createMovieMenu(movie) {
 
     const removeButton = document.createElement("button");
     removeButton.id = `${movie.imdbID}-remove`;
-    removeButton.classList.add("movie-menu-option", "remove-option");
+    removeButton.classList.add("movie-card__menu-option", "movie-card__menu-option--danger");
     removeButton.type = "button";
     removeButton.textContent = "Delete";
     removeButton.addEventListener("click", async () => {
@@ -354,17 +354,17 @@ function createMovieMenu(movie) {
 
 function createGenreTags(movie) {
     const genres = document.createElement("div");
-    genres.classList.add("movie-genres");
+    genres.classList.add("movie-card__genres");
 
     movie.genres.forEach(genre => {
         const genreSpan = document.createElement("span");
         genreSpan.textContent = genre;
-        genreSpan.classList.add("genre-tag");
+        genreSpan.classList.add("movie-card__genre");
 
         if (state.activeGenreFilters.includes(genre)) {
-            genreSpan.classList.add("active-genre");
+            genreSpan.classList.add("movie-card__genre--active");
         } else {
-            genreSpan.classList.add("inactive-genre");
+            genreSpan.classList.add("movie-card__genre--inactive");
         }
 
         genres.append(genreSpan);
@@ -375,7 +375,7 @@ function createGenreTags(movie) {
 
 function createMoviePoster(movie) {
     const imageWrapper = document.createElement("div");
-    imageWrapper.classList.add("img-wrapper");
+    imageWrapper.classList.add("movie-card__poster-frame");
 
     const poster = document.createElement("img");
     poster.src = movie.poster;
@@ -391,7 +391,7 @@ function createMovieMetadata(movie) {
     const formattedDate = `${releasedDate.getFullYear()} ${releasedDate.toLocaleString("en-US", { month: "short" })} ${String(releasedDate.getDate()).padStart(2, "0")}`;
 
     const detailsText = document.createElement("p");
-    detailsText.classList.add("meta-data");
+    detailsText.classList.add("movie-card__meta");
     detailsText.innerHTML = `
         <span class="label">Runtime</span>
         <span class="value">${movie.runtime} min</span>
@@ -415,14 +415,14 @@ function createMovieDetails(movie, movieIndex) {
     const panels = [];
 
     const tablist = document.createElement("div");
-    tablist.classList.add("details-tablist");
+    tablist.classList.add("movie-card__tab-list");
     tablist.setAttribute("role", "tablist");
     tablist.setAttribute("aria-label", "Movie Credits");
 
     tabs.forEach((tab, index) => {
         const button = document.createElement("button");
         button.id = `tab-${movieIndex}-${tab.id}`;
-        button.classList.add("details-tab-button");
+        button.classList.add("movie-card__tab-button");
         button.setAttribute("role", "tab");
         button.setAttribute("aria-controls", `panel-${movieIndex}-${tab.id}`);
         button.setAttribute("aria-selected", index === 0 ? "true" : "false");
@@ -431,7 +431,7 @@ function createMovieDetails(movie, movieIndex) {
 
         const panel = document.createElement("section");
         panel.id = `panel-${movieIndex}-${tab.id}`;
-        panel.classList.add("details-section", "scrollable");
+        panel.classList.add("movie-card__tab-panel", "scrollable");
         panel.setAttribute("role", "tabpanel");
         panel.setAttribute("aria-labelledby", button.id);
 
@@ -466,24 +466,24 @@ function createMovieDetails(movie, movieIndex) {
 
 function createPlotPanel(movie) {
     const plot = document.createElement("p");
-    plot.classList.add("movie-plot", "scrollable");
+    plot.classList.add("movie-card__plot", "scrollable");
     plot.textContent = movie.plot;
     return plot;
 }
 
 function createRatingsPanel(movie) {
     const ratings = document.createElement("div");
-    ratings.classList.add("movie-ratings");
+    ratings.classList.add("movie-card__ratings");
     ratings.innerHTML = `
-        <span class="rating-badge imdb">IMDb ${movie.imdbRating}/10</span>
-        <span class="rating-badge metascore">Metascore ${movie.metascore}</span>
+        <span class="movie-card__rating imdb">IMDb ${movie.imdbRating}/10</span>
+        <span class="movie-card__rating metascore">Metascore ${movie.metascore}</span>
     `;
     return ratings;
 }
 
 function createCreditsPanel(movie) {
     const creditsPanel = document.createElement("div");
-    creditsPanel.classList.add("credits-panel-container");
+    creditsPanel.classList.add("movie-card__credits");
 
     const credits = [
         { label: "Actors", items: movie.actors },
@@ -493,7 +493,7 @@ function createCreditsPanel(movie) {
 
     credits.forEach(contributor => {
         const creditsDiv = document.createElement("div");
-        creditsDiv.classList.add("credits-panel");
+        creditsDiv.classList.add("movie-card__credit-group");
 
         const title = document.createElement("h2");
         title.textContent = contributor.label;
@@ -526,7 +526,7 @@ function toggleMovieDetails(button) {
 
 async function loadMovieSuggestions() {
     const title = elements.addMovieSearchInput.value.trim();
-    elements.addMovieSuggestions.innerHTML = "";
+    elements.addMovieResults.innerHTML = "";
 
     if (!title) {
         return;
@@ -540,9 +540,9 @@ async function loadMovieSuggestions() {
             return;
         }
 
-        elements.addMovieSuggestions.innerHTML = "";
+        elements.addMovieResults.innerHTML = "";
         Object.entries(suggestions).forEach(([imdbID, movie]) => {
-            elements.addMovieSuggestions.append(createMovieSuggestionRow(imdbID, movie));
+            elements.addMovieResults.append(createMovieSuggestionRow(imdbID, movie));
         });
     } catch (error) {
         console.error("Failed to load movie suggestions:", error);
@@ -551,22 +551,22 @@ async function loadMovieSuggestions() {
 
 function createMovieSuggestionRow(imdbID, movie) {
     const row = document.createElement("div");
-    row.classList.add("add-movie-suggestion");
+    row.classList.add("add-movie-result");
 
     const movieText = document.createElement("div");
-    movieText.classList.add("add-movie-suggestion-text");
+    movieText.classList.add("add-movie-result__text");
 
     const movieTitle = document.createElement("span");
-    movieTitle.classList.add("add-movie-suggestion-title");
+    movieTitle.classList.add("add-movie-result__title");
     movieTitle.textContent = movie.title;
 
     const movieYear = document.createElement("span");
-    movieYear.classList.add("add-movie-suggestion-year");
+    movieYear.classList.add("add-movie-result__year");
     movieYear.textContent = movie.year;
 
     const actionButton = document.createElement("button");
     actionButton.type = "button";
-    actionButton.classList.add("add-movie-suggestion-btn");
+    actionButton.classList.add("add-movie-result__button");
     actionButton.dataset.imdbID = imdbID;
     setSuggestionButtonState(actionButton, movie.inCollection);
     actionButton.addEventListener("click", () => toggleMovieInCollection(imdbID, actionButton));
@@ -581,12 +581,12 @@ function createMovieSuggestionRow(imdbID, movie) {
 
 function setSuggestionButtonState(button, isInCollection) {
     button.disabled = false;
-    button.classList.toggle("remove-from-collection", isInCollection);
+    button.classList.toggle("add-movie-result__button--remove", isInCollection);
     button.textContent = isInCollection ? "Remove from collection" : "Add";
 }
 
 async function toggleMovieInCollection(imdbID, button) {
-    const isInCollection = button.classList.contains("remove-from-collection");
+    const isInCollection = button.classList.contains("add-movie-result__button--remove");
     button.disabled = true;
     button.textContent = isInCollection ? "Removing..." : "Adding...";
 
@@ -609,36 +609,36 @@ async function toggleMovieInCollection(imdbID, button) {
 // ---------------
 
 function renderGenreFilters() {
-    elements.activeFilters.innerHTML = "";
-    elements.availableFilters.innerHTML = "";
+    elements.activeGenreFilters.innerHTML = "";
+    elements.availableGenreFilters.innerHTML = "";
 
     if (state.activeGenreFilters.length === 0) {
         const allButton = document.createElement("span");
-        allButton.classList.add("filter-btn", "active-filter");
+        allButton.classList.add("genre-filter", "genre-filter--active");
         allButton.textContent = "ALL";
         allButton.addEventListener("click", event => event.stopPropagation());
-        elements.activeFilters.append(allButton);
+        elements.activeGenreFilters.append(allButton);
     } else {
         state.activeGenreFilters.forEach(genre => {
-            elements.activeFilters.append(createActiveGenreFilter(genre));
+            elements.activeGenreFilters.append(createActiveGenreFilter(genre));
         });
     }
 
     state.availableGenres
         .filter(genre => !state.activeGenreFilters.includes(genre))
         .forEach(genre => {
-            elements.availableFilters.append(createAvailableGenreFilter(genre));
+            elements.availableGenreFilters.append(createAvailableGenreFilter(genre));
         });
 }
 
 function createActiveGenreFilter(genre) {
     const button = document.createElement("span");
-    button.classList.add("filter-btn", "active-filter");
+    button.classList.add("genre-filter", "genre-filter--active");
     button.textContent = genre;
     button.addEventListener("click", event => event.stopPropagation());
 
     const remove = document.createElement("span");
-    remove.classList.add("remove-filter");
+    remove.classList.add("genre-filter__remove");
     remove.textContent = "x";
     remove.addEventListener("click", () => removeGenreFilter(genre));
 
@@ -648,7 +648,7 @@ function createActiveGenreFilter(genre) {
 
 function createAvailableGenreFilter(genre) {
     const button = document.createElement("span");
-    button.classList.add("filter-btn", "available-filter");
+    button.classList.add("genre-filter", "genre-filter--available");
     button.textContent = genre;
     button.addEventListener("click", event => {
         event.stopPropagation();
@@ -672,24 +672,24 @@ function addGenreFilter(genre) {
 // ---------------
 
 function openSidebar() {
-    elements.sidebarToggleButton.setAttribute("hidden", "");
-    elements.body.classList.remove("sidebar-closed");
+    elements.sidebarOpenButton.setAttribute("hidden", "");
+    elements.body.classList.remove("is-sidebar-closed");
 }
 
 function closeSidebar() {
-    elements.body.classList.add("sidebar-closed");
-    elements.sidebarToggleButton.removeAttribute("hidden");
+    elements.body.classList.add("is-sidebar-closed");
+    elements.sidebarOpenButton.removeAttribute("hidden");
 }
 
 function startAutoScroll() {
     if (!state.pauseScroll) {
-        elements.movieCardContainer.scrollTop += state.scrollSpeed;
+        elements.movieGrid.scrollTop += state.scrollSpeed;
 
         if (
-            elements.movieCardContainer.scrollTop + elements.movieCardContainer.clientHeight >=
-            elements.movieCardContainer.scrollHeight
+            elements.movieGrid.scrollTop + elements.movieGrid.clientHeight >=
+            elements.movieGrid.scrollHeight
         ) {
-            elements.movieCardContainer.scrollTop = 0;
+            elements.movieGrid.scrollTop = 0;
         }
     }
 
