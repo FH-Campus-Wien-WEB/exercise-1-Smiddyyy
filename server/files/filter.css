@@ -1,7 +1,7 @@
 @import url(base.css);
 
 /* ===== LAYOUT ===== */
-body > aside {
+body>aside {
     display: grid;
     grid-template-rows: 75px 60px 1fr auto;
     grid-template-columns: 1fr;
@@ -14,10 +14,21 @@ body > aside {
 }
 
 /* Areas */
-#sidebar-header { grid-area: header; }
-#search-filter { grid-area: title; }
-#genre-filters { grid-area: genre; }
-#manage { grid-area: manage; }
+#sidebar-header {
+    grid-area: header;
+}
+
+#search-filter {
+    grid-area: title;
+}
+
+#genre-filters {
+    grid-area: genre;
+}
+
+#manage {
+    grid-area: manage;
+}
 
 /* ===== SIDEBAR CONTAINER ===== */
 #filter-sidebar {
@@ -53,7 +64,7 @@ body > aside {
     padding: 4px 0;
 }
 
-#search-filter > div {
+#search-filter>div {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -63,12 +74,12 @@ body > aside {
     padding: 6px 12px;
 
     border: 1px solid #e5e7eb;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 
     transition: all 0.2s ease;
 }
 
-#search-filter > div:focus-within {
+#search-filter>div:focus-within {
     border-color: #832197ab;
     box-shadow: 0 0 0 3px rgba(131, 33, 151, 0.18);
 }
@@ -141,14 +152,14 @@ body > aside {
 .filter-btn.available-filter:hover {
     background: #c4b9e0;
     transform: translateY(-2px);
-    box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
 }
 
 /* active filters */
 .filter-btn.active-filter {
     background: #712f71;
     color: white;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
 /* remove "x" */
@@ -182,14 +193,14 @@ body > aside {
 }
 
 /* primary */
-#searchBtn {
+#addBtn {
     background: #712f71;
     color: white;
 }
 
-#searchBtn:hover {
+#addBtn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
 }
 
 /* secondary */
@@ -200,5 +211,5 @@ body > aside {
 
 #authBtn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
 }

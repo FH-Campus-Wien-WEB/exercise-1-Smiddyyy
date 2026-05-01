@@ -6,9 +6,7 @@ const bcrypt = require("bcrypt");
 const fs = require('fs/promises');
 const config = require("./config.js");
 const userModel = require("./user-model.js");
-const { writeJSON, readJSON, normalizeMovieData, loadAllMovies, getAllMovies, getMovie } = require('./movie-model.js');
-
-require('dotenv').config();
+const { writeJSON, readJSON, normalizeMovieData, loadAllMovies, getAllMovies, getMovie, addMovie, removeMovie } = require('./movie-model.js');
 
 const app = express()
 
@@ -40,17 +38,17 @@ app.get('/movies', function (req, res) {
   // can be used multiple times to filter by multiple genres (e.g. /movies?genre=Action,Sci-Fi)
   const genreFilter = req.query.genre;
   const genreFilters = genreFilter
-  ? genreFilter.split(',').map(s => s.trim())
-  : null;
-  if (genreFilters){
+    ? genreFilter.split(',').map(s => s.trim())
+    : null;
+  if (genreFilters) {
     console.log("Received request for movies with genre filters:", genreFilters);
   }
-  
+
   // accept optional query parameter 'title' to filter movies by title (e.g. /movies?title=godfather)
   const titleFilter = req.query.title
-  ? req.query.title.toLowerCase().trim()
-  : null;
-  if (titleFilter){
+    ? req.query.title.toLowerCase().trim()
+    : null;
+  if (titleFilter) {
     console.log("Received request for movies with title filter:", titleFilter);
   }
 
@@ -76,7 +74,7 @@ app.get('/movies', function (req, res) {
 
         return true;
       }
-    );
+      );
 
     res.json(movies);
   } catch (err) {
@@ -132,13 +130,25 @@ app.put('/movies/:imdbID', requireLogin, async function (req, res) {
   }
 });
 
-app.delete("/movies/:imdbID", requireLogin, function (req, res) {
-  //TODO
+app.delete("/movies/:imdbID", requireLogin, async function (req, res) {
+  try {
+    const username = req.session.user?.username;
+    const imdbID = req.params.imdbID;
+    const removed = await removeMovie(imdbID, username);
+
+    if (!removed) {
+      return res.status(404).json({ error: 'Movie not found' });
+    }
+
+    res.status(200).json({ status: 'success', msg: 'Movie removed successfully' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-app.post('/fetch-new-movie', requireLogin, async function (req, res) {
-  //This endpoint will fetch a new movie from the OMDB API and save it to a JSON file.
+app.get('/fetch-movie-suggestions', requireLogin, async function (req, res) {
   try {
+    const username = req.session.user?.username;
     const title = req.query.title;
 
     if (!title) {
@@ -146,32 +156,76 @@ app.post('/fetch-new-movie', requireLogin, async function (req, res) {
     }
 
     // Call OMDB API
-    const apiKey = config.OMDB_API_KEY;
+    const apiKey = config.omdbApiKey;
+
     if (!apiKey) {
       return res.status(500).json({ error: 'internal: OMDb API key not configured' });
     }
 
     const response = await fetch(
-      `https://www.omdbapi.com/?t=${encodeURIComponent(title)}&apikey=${apiKey}`
+      `https://www.omdbapi.com/?s=${encodeURIComponent(title)}&apikey=${apiKey}`
     );
     const data = await response.json();
-
-    if (data.Response === 'False') {
-      return res.status(404).json({
-        error: data.Error // Movie not found});
-      });
+    if ('Error' in data) {
+      return res.status(404).json(data);
     }
 
-    // normalize and save movie data to JSON file
-    const movie = normalizeMovieData(data);
+    const result = {}
+    data['Search'].forEach(element => {
+      result[element.imdbID] = {
+        'title': element.Title,
+        'year': element.Year,
+        'inCollection': getMovie(username, element.imdbID) !== null
+      }
+    });
+    return res.status(200).json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
-    // check if movie already exists in cache
-    if (getMovie(movie.imdbID)) {
+app.post('/fetch-new-movie', requireLogin, async function (req, res) {
+  //This endpoint will fetch a new movie from the OMDB API and save it to a JSON file.
+  try {
+    const username = req.session.user?.username;
+    const imdbID = req.query.imdbID;
+    if (!imdbID) {
+      return res.status(400).send('missing query parameter: imdbID');
+    }
+    const apiKey = config.omdbApiKey;
+    if (!apiKey) {
+      return res.status(500).json({ error: 'internal: OMDb API key not configured' });
+    }
+
+    // check if user already has movie
+    if (getMovie(username, imdbID)) {
       return res.status(200).json({ "status": "success", "msg": "Movie already exists" });
     }
 
-    // writeJSON also updates the cache
-    await writeJSON(`${movie.imdbID}.json`, movie);
+    // check if movie exists locally -> if not external api
+    var movie = getMovie(null, imdbID)
+    if (movie === null) {
+      console.log("Movie must be fetched from external source");
+      // Call OMDB API
+      const response = await fetch(
+        `https://www.omdbapi.com/?i=${encodeURIComponent(imdbID)}&apikey=${apiKey}`
+      );
+      const data = await response.json();
+
+      if (data.Response === 'False') {
+        return res.status(404).json({
+          error: data.Error // Movie not found});
+        });
+      }
+
+      // normalize and save movie data to JSON file
+      movie = normalizeMovieData(data);
+
+      await writeJSON(`${imdbID}.json`, movie);
+    }
+
+    // add Movie to Users Movies
+    await addMovie(imdbID, movie, username);
 
     res.status(201).json({ "status": "success", "msg": "Movie added successfully" });
   } catch (err) {
@@ -206,7 +260,7 @@ app.post("/login", function (req, res) {
   }
 });
 
-app.get("/logout", function(req, res){
+app.get("/logout", function (req, res) {
   req.session.destroy((err) => {
     if (err) {
       return res.sendStatus(500);
@@ -231,7 +285,7 @@ app.get("/session", function (req, res) {
 async function startServer() {
   // Load all movies into memory at startup
   await loadAllMovies();
-  
+
   app.listen(config.port);
   console.log(`Server now listening on http://localhost:${config.port}/`);
 }

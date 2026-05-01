@@ -1,29 +1,35 @@
 let currentSession = null;
+let pauseScroll = true;
+let scrollSpeed = 1;
+
 
 window.onload = function () {
     const loginDialog = document.getElementById("loginDialog");
+    const addMovieDialog = document.getElementById("addMovieDialog");
     const loginForm = document.getElementById('loginForm');
     const searchField = document.getElementById("search-input");
     const sidebar = document.getElementById("filter-sidebar");
     const toggleBtn = document.getElementById("menu-toggle");
     const closeBtn = document.getElementById("close-sidebar");
     const authBtn = document.getElementById('authBtn');
+    const addBtn = document.getElementById('addBtn');
     const body = document.body;
+    const mvcContainer = document.getElementById("movie-card-container");
 
     fetch("/session")
-    .then(response => {
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      return response.json();
-    })
-    .then(data => {
-      currentSession = data || null;
-      updateUI();
-    })
-    .catch(error => {
-      console.error('Failed to load session:', error);
-      currentSession = null;
-      updateUI();
-    });
+        .then(response => {
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            return response.json();
+        })
+        .then(data => {
+            currentSession = data || null;
+            updateUI();
+        })
+        .catch(error => {
+            console.error('Failed to load session:', error);
+            currentSession = null;
+            updateUI();
+        });
 
     // Login dialog
     loginDialog.addEventListener("close", () => {
@@ -41,7 +47,7 @@ window.onload = function () {
         const response = await fetch("/login", {
             method: "POST",
             headers: {
-            "Content-Type": "application/json"
+                "Content-Type": "application/json"
             },
             body: JSON.stringify({ username, password })
         });
@@ -52,6 +58,8 @@ window.onload = function () {
             updateUI();
             loginDialog.close();
             renderLogin();
+            pauseScroll = true;
+            mvcContainer.scrollTop = 0;
         } else {
             alert("Invalid username or password");
         }
@@ -59,21 +67,38 @@ window.onload = function () {
 
     authBtn.onclick = () => {
         fetch("/logout")
-          .then(response => {
-            if (response.ok) {
-              currentSession = null;
-              updateUI();
-              renderLogout();
-            }
-          })
-          .catch(error => {
-            console.error('Logout failed:', error);
-          });
+            .then(response => {
+                if (response.ok) {
+                    currentSession = null;
+                    activefilters = [];
+                    updateUI();
+                    renderLogout();
+                    pauseScroll = false;
+                }
+            })
+            .catch(error => {
+                console.error('Logout failed:', error);
+            });
     };
 
     closeBtn.addEventListener("click", () => {
         body.classList.toggle("sidebar-closed");
         toggleBtn.removeAttribute("hidden");
+    });
+
+    addBtn.addEventListener("click", () => {
+        addMovieDialog.showModal();
+    });
+
+    addMovieDialog.addEventListener("click", (event) => {
+        if (event.target === addMovieDialog) {
+            addMovieDialog.close();
+        }
+    });
+
+    const addMovieDialogSearchInput = document.getElementById("addMovieDialog-search-input");
+    addMovieDialogSearchInput.addEventListener("keyup", (e) => {
+        if (e.key === "Enter") addMovieSuggestions();
     });
 
     toggleBtn.addEventListener("click", () => {
@@ -85,7 +110,100 @@ window.onload = function () {
         fetchMovies();
     });
 
+
+    // fun
+    function autoScroll() {
+        if (!pauseScroll) {
+            mvcContainer.scrollTop += scrollSpeed;
+
+            // Loop back to top when reaching bottom
+            if (mvcContainer.scrollTop + mvcContainer.clientHeight >= mvcContainer.scrollHeight) {
+                mvcContainer.scrollTop = 0;
+            }
+        }
+        requestAnimationFrame(autoScroll);
+    }
+    autoScroll()
 };
+
+function addMovieSuggestions() {
+    const container = document.getElementById('addMovieDialog-suggestions');
+    const searchInput = document.getElementById('addMovieDialog-search-input');
+    const title = searchInput.value.trim();
+
+    container.innerHTML = "";
+    if (!title) {
+        return;
+    }
+
+    fetch(`/fetch-movie-suggestions?title=${encodeURIComponent(title)}`)
+        .then(response => response.ok ? response.json() : {})
+        .then(suggestions => {
+            if (searchInput.value.trim() !== title) {
+                return;
+            }
+
+            container.innerHTML = "";
+            Object.entries(suggestions).forEach(([imdbID, movie]) => {
+                const row = document.createElement("div");
+                row.classList.add("add-movie-suggestion");
+
+                const movieText = document.createElement("div");
+                movieText.classList.add("add-movie-suggestion-text");
+
+                const movieTitle = document.createElement("span");
+                movieTitle.classList.add("add-movie-suggestion-title");
+                movieTitle.textContent = movie.title;
+
+                const movieYear = document.createElement("span");
+                movieYear.classList.add("add-movie-suggestion-year");
+                movieYear.textContent = movie.year;
+
+                movieText.append(movieTitle);
+                movieText.append(movieYear);
+
+                const addButton = document.createElement("button");
+                addButton.type = "button";
+                addButton.classList.add("add-movie-suggestion-btn");
+                addButton.dataset.imdbID = imdbID;
+
+                if (movie.inCollection) {
+                    addButton.classList.add("remove-from-collection");
+                    addButton.textContent = "Remove from collection";
+                } else {
+                    addButton.textContent = "Add";
+                }
+
+                addButton.addEventListener("click", async () => {
+                    addButton.disabled = true;
+                    const isInCollection = addButton.classList.contains("remove-from-collection");
+                    addButton.textContent = isInCollection ? "Removing..." : "Adding...";
+
+                    const response = isInCollection
+                        ? await fetch(`/movies/${encodeURIComponent(imdbID)}`, { method: "DELETE" })
+                        : await fetch(`/fetch-new-movie?imdbID=${encodeURIComponent(imdbID)}`, { method: "POST" });
+
+                    if (response.ok) {
+                        addButton.classList.toggle("remove-from-collection", !isInCollection);
+                        addButton.textContent = isInCollection ? "Add" : "Remove from collection";
+                        addButton.disabled = false;
+                        fetchMovies();
+                    } else {
+                        addButton.disabled = false;
+                        addButton.textContent = isInCollection ? "Remove from collection" : "Add";
+                        alert(isInCollection ? "Movie could not be removed" : "Movie could not be added");
+                    }
+                });
+
+                row.append(movieText);
+                row.append(addButton);
+                container.append(row);
+            });
+        })
+        .catch(error => {
+            console.error("Failed to load movie suggestions:", error);
+        });
+}
 
 function updateUI() {
     fetchMovies();
@@ -94,18 +212,20 @@ function updateUI() {
         document.body.classList.remove("sidebar-closed");
         document.getElementById("menu-toggle").setAttribute("hidden", "");
         document.getElementById("movie-card-container").classList.remove("blurred");
+        pauseScroll = true;
     } else {
         document.body.classList.add("sidebar-closed");
         document.getElementById("menu-toggle").removeAttribute("hidden");
         document.getElementById("movie-card-container").classList.add("blurred");
+        pauseScroll = false;
         loginForm.reset();
         loginDialog.showModal();
     }
 }
 
-function renderLogout(){
+function renderLogout() {
     const greetingElement = document.getElementById('user-greeting');
-    greetingElement.innerHTML= `
+    greetingElement.innerHTML = `
         <p class="greeting-title">
         👋 See you soon!
         </p>
@@ -127,7 +247,7 @@ function renderLogin() {
     if (currentSession) {
         const loginDate = new Date(currentSession.loginTime);
         const formattedTime = loginDate.toLocaleString();
-        greetingElement.innerHTML= `
+        greetingElement.innerHTML = `
             <p class="greeting-title">
                 👋 Welcome, <span class="greeting-name">${currentSession.firstName} ${currentSession.lastName}</span>!
             </p>
@@ -139,7 +259,7 @@ function renderLogin() {
         greetingElement.classList.add("show");
         setTimeout(() => {
             greetingElement.classList.add("hide");
-            
+
             setTimeout(() => {
                 greetingElement.classList.remove("show", "hide");
                 greetingElement.style.display = "none";
@@ -178,21 +298,60 @@ function renderMovies(xhrRequest) {
             title.textContent = movie.title;
             titleRow.append(title);
 
-            // Edit
+            const movieMenu = document.createElement("div");
+            movieMenu.classList.add("movie-menu");
+
+            const menuButton = document.createElement("button");
+            menuButton.id = movie.imdbID + "-menu";
+            menuButton.classList.add("movie-menu-btn");
+            menuButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <circle cx="8" cy="3" r="1.5"/>
+                <circle cx="8" cy="8" r="1.5"/>
+                <circle cx="8" cy="13" r="1.5"/>
+            </svg>`;
+            menuButton.setAttribute("aria-label", `Open actions for ${movie.title}`);
+            menuButton.setAttribute("title", `Actions for ${movie.title}`);
+
+            const menuOptions = document.createElement("div");
+            menuOptions.classList.add("movie-menu-options");
+            menuOptions.setAttribute("hidden", "");
+
             const editButton = document.createElement("button");
             editButton.id = movie.imdbID + "-edit";
-            editButton.classList.add("edit-btn");
-            editButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
-                <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
-                <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
-                </svg>`;
-            editButton.setAttribute("aria-label", `Edit ${movie.title} movie details`);
-            editButton.setAttribute("title", `Edit ${movie.title}`);
+            editButton.classList.add("movie-menu-option");
+            editButton.type = "button";
+            editButton.textContent = "Edit";
             editButton.onclick = function () {
                 window.open('edit.html?imdbID=' + movie.imdbID, '_blank', 'width=500,height=800');
+                menuOptions.setAttribute("hidden", "");
             };
 
-            titleRow.append(editButton);
+            const removeButton = document.createElement("button");
+            removeButton.id = movie.imdbID + "-remove";
+            removeButton.classList.add("movie-menu-option", "remove-option");
+            removeButton.type = "button";
+            removeButton.textContent = "Delete";
+            removeButton.onclick = async function () {
+                const response = await fetch(`/movies/${encodeURIComponent(movie.imdbID)}`, {
+                    method: "DELETE"
+                });
+
+                if (response.ok) {
+                    fetchMovies();
+                } else {
+                    alert("Movie could not be removed");
+                }
+            };
+
+            menuButton.onclick = function () {
+                menuOptions.toggleAttribute("hidden");
+            };
+
+            menuOptions.append(editButton);
+            menuOptions.append(removeButton);
+            movieMenu.append(menuButton);
+            movieMenu.append(menuOptions);
+            titleRow.append(movieMenu);
             header.append(titleRow);
 
             // Genres as tags
@@ -409,13 +568,13 @@ function toggleCard(button) {
 let ALL_GENRES = [];
 let activefilters = [];
 
-function setAvailableGenres(xhrRequest){
+function setAvailableGenres(xhrRequest) {
     ALL_GENRES = [];
     if (xhrRequest.status == 200) {
         const movies = JSON.parse(xhrRequest.responseText);
         movies.forEach((movie, movieIndex) => {
             movie.genres.forEach(genre => {
-                if (!ALL_GENRES.includes(genre)){
+                if (!ALL_GENRES.includes(genre)) {
                     ALL_GENRES.push(genre);
                 }
             });

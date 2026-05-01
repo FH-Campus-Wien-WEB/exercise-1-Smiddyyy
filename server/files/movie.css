@@ -11,6 +11,120 @@
     margin: 0px 20px 0px;
 }
 
+#addMovieDialog {
+    width: min(520px, 92vw);
+    padding: 0;
+    border: 0;
+    border-radius: 16px;
+    background: #ffffff;
+    color: #111827;
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.25);
+}
+
+#addMovieDialog::backdrop {
+    background: rgba(17, 24, 39, 0.42);
+}
+
+#addMovieDialog>div {
+    padding: 22px;
+}
+
+.add-movie-search {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+#addMovieDialog-search-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 11px 40px 11px 14px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    background: #f9fafb;
+    color: #111827;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+#addMovieDialog-search-input:focus {
+    border-color: #832197ab;
+    box-shadow: 0 0 0 3px rgba(131, 33, 151, 0.18);
+    background: #ffffff;
+}
+
+.add-movie-search svg {
+    position: absolute;
+    right: 14px;
+    color: #6b7280;
+    pointer-events: none;
+}
+
+#addMovieDialog-suggestions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 360px;
+    margin-top: 14px;
+    overflow-y: auto;
+}
+
+.add-movie-suggestion {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    background: #f9fafb;
+}
+
+.add-movie-suggestion-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    text-align: left;
+}
+
+.add-movie-suggestion-title {
+    overflow: hidden;
+    color: #111827;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.add-movie-suggestion-year {
+    color: #6b7280;
+    font-size: 0.82rem;
+}
+
+.add-movie-suggestion-btn {
+    flex: 0 0 auto;
+    min-width: 66px;
+    padding: 8px 12px;
+    border: 0;
+    border-radius: 999px;
+    background: #4d1a51;
+    color: #ffffff;
+    font-size: 0.84rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.add-movie-suggestion-btn:disabled {
+    background: #e5e7eb;
+    color: #6b7280;
+    cursor: default;
+}
+
+.add-movie-suggestion-btn.remove-from-collection {
+    background: #f3f4f6;
+    color: #9f1239;
+}
+
 /* movie card container */
 .movie-card {
     width: 260px;
@@ -31,6 +145,8 @@
 }
 
 .movie-card header {
+    position: relative;
+    z-index: 20;
     background-color: white;
     text-align: center;
     margin-bottom: 12px;
@@ -42,30 +158,78 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 40px;
+    min-height: 40px;
+    padding: 0 34px;
 }
 
 .title-row h2 {
     margin: 0;
     font-size: 1.2rem;
     line-height: 1.2;
-    width: 80%;
+    width: 100%;
 }
 
-.edit-btn {
+.movie-menu {
     position: absolute;
-    right: 0;
+    left: 0;
+    top: 50%;
+    z-index: 30;
+    transform: translateY(-50%);
+}
+
+.movie-menu-btn {
+    width: 28px;
+    height: 28px;
+    display: grid;
+    place-items: center;
     background: none;
     border: none;
     cursor: pointer;
     font-size: 1.2rem;
     color: darkgrey;
+    padding: 0;
+}
+
+.movie-menu-options {
+    position: absolute;
+    top: 32px;
+    left: 0;
+    z-index: 40;
+    min-width: 96px;
+    padding: 4px;
+    border-radius: 8px;
+    background: #ffffff;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+    border: 1px solid #e5e7eb;
+}
+
+.movie-menu-option {
+    display: block;
+    width: 100%;
+    padding: 7px 10px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: #374151;
+    text-align: left;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.movie-menu-option:hover {
+    background: #f3f4f6;
+}
+
+.remove-option {
+    color: #9f1239;
 }
 
 .img-wrapper {
     max-width: 200px;
     height: 250px;
     margin: 0 auto;
+    position: relative;
+    z-index: 1;
     /* hides zoom overflow */
     overflow: hidden;
     border-radius: 14px;
@@ -83,10 +247,6 @@
 .img-wrapper:hover img {
     /* zoom effect */
     transform: scale(1.1);
-}
-
-.img-wrapper {
-    position: relative;
 }
 
 .img-wrapper::before {

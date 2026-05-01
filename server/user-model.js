@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
+const config = require("./config.js");
 
-const users = JSON.parse(fs.readFileSync('data/users.json', 'utf8'));
+const users = JSON.parse(fs.readFileSync(config.usersFile, 'utf8'));
 
 module.exports = users;

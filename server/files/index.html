@@ -27,8 +27,10 @@
         <div id="search-filter">
             <div>
                 <input type="text" id="search-input" placeholder="Search by title" />
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search"
+                    viewBox="0 0 16 16">
+                    <path
+                        d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
                 </svg>
             </div>
         </div>
@@ -40,7 +42,7 @@
         </div>
         <div id="manage">
             <!-- TODO -->
-            <button id="searchBtn">Search</button> 
+            <button id="addBtn">Add Movie</button>
             <button id="authBtn">Logout</button>
         </div>
     </aside>
@@ -50,19 +52,32 @@
 
     <!-- Login Dialog -->
     <dialog id="loginDialog">
-      <form id="loginForm">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required>
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required>
-        <button type="submit">Login</button>
-      </form>
+        <form id="loginForm">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <button type="submit">Login</button>
+        </form>
     </dialog>
 
     <!-- Search Dialog -->
-    <dialog id="searchDialog">
-        <!-- TODO -->
+    <dialog id="addMovieDialog">
+        <div>
+            <div class="add-movie-search">
+                <input type="text" id="addMovieDialog-search-input" placeholder="Search by title" />
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                    class="bi bi-search" viewBox="0 0 16 16">
+                    <path
+                        d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+                </svg>
+            </div>
+            <div id="addMovieDialog-suggestions">
+
+            </div>
+        </div>
     </dialog>
 
 </body>
+
 </html>
