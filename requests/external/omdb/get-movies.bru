@@ -1,0 +1,16 @@
+meta {
+  name: get-movies
+  type: http
+  seq: 3
+}
+
+get {
+  url: http://www.omdbapi.com/?s=gladiator&apikey={{apikey}}
+  body: none
+  auth: none
+}
+
+params:query {
+  s: gladiator
+  apikey: {{apikey}}
+}
