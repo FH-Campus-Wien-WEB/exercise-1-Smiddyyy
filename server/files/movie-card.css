@@ -1,0 +1,341 @@
+/* ===== Movie Card Grid ===== */
+#movie-card-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    align-content: flex-start;
+    justify-content: center;
+    max-height: 100%;
+    margin: 0 20px;
+    overflow-y: scroll;
+}
+
+#movie-card-container.blurred {
+    filter: blur(6px);
+    pointer-events: none;
+    user-select: none;
+}
+
+/* ===== Movie Card Shell ===== */
+.movie-card {
+    width: 260px;
+    min-width: 260px;
+    margin: 5px;
+    padding: 16px;
+    border-radius: 12px;
+    background: #ffffff;
+    color: #111827;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    backdrop-filter: blur(6px);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.movie-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.movie-card header {
+    position: relative;
+    z-index: 20;
+    margin-bottom: 12px;
+    background-color: white;
+    text-align: center;
+}
+
+.movie-card p {
+    margin: 14px 0;
+    color: black;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.movie-card hr {
+    height: 1px;
+    margin: 10px 0;
+    border: 0;
+    background: #e5e7eb;
+}
+
+/* ===== Title And Actions ===== */
+.title-row {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    margin: 0 0 12px;
+    padding: 0 34px;
+}
+
+.title-row h2 {
+    width: 100%;
+    margin: 0;
+    font-size: 1.2rem;
+    line-height: 1.2;
+}
+
+.movie-menu {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    z-index: 30;
+    transform: translateY(-50%);
+}
+
+.movie-menu-btn {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: none;
+    background: none;
+    color: darkgrey;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+.movie-menu-options {
+    position: absolute;
+    top: 32px;
+    left: 0;
+    z-index: 40;
+    min-width: 96px;
+    padding: 4px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #ffffff;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+}
+
+.movie-menu-option {
+    display: block;
+    width: 100%;
+    padding: 7px 10px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: #374151;
+    font-size: 0.85rem;
+    text-align: left;
+    cursor: pointer;
+}
+
+.movie-menu-option:hover {
+    background: #f3f4f6;
+}
+
+.remove-option {
+    color: #9f1239;
+}
+
+/* ===== Poster ===== */
+.img-wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 200px;
+    height: 250px;
+    margin: 0 auto;
+    overflow: hidden;
+    border-radius: 14px;
+}
+
+.img-wrapper::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+    transform-origin: top center;
+    transition: transform 0.3s ease;
+}
+
+.img-wrapper:hover img {
+    transform: scale(1.1);
+}
+
+/* ===== Genres ===== */
+.movie-genres {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+    margin: 8px 0 10px;
+}
+
+.genre-tag {
+    display: inline-block;
+    padding: 3px 12px 6px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.active-genre {
+    background: #712f71;
+    color: white;
+}
+
+.inactive-genre {
+    background: #dfdcef;
+    color: #374151;
+}
+
+/* ===== Metadata And Ratings ===== */
+.movie-card p.meta-data {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin: 0.5rem 0;
+    color: #777;
+    font-size: 0.75rem;
+    letter-spacing: 0.02em;
+}
+
+.movie-card p.meta-data .label {
+    color: #555;
+    font-weight: 600;
+}
+
+.movie-card p.meta-data .value {
+    font-weight: 400;
+}
+
+.movie-card p.meta-data .separator {
+    margin: 0 2px;
+    color: #aaa;
+}
+
+.movie-ratings {
+    display: flex;
+    justify-content: left;
+    gap: 8px;
+    margin: auto 0 18px;
+}
+
+.rating-badge {
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: #f0ece0;
+    color: #374151;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+/* ===== Expandable Details ===== */
+.movie-details {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.3s ease, opacity 0.25s ease;
+}
+
+.movie-details.open {
+    max-height: 700px;
+    opacity: 1;
+}
+
+.expand-btn {
+    display: block;
+    margin: 10px auto 0;
+    border: none;
+    background: transparent;
+    color: #4b5563;
+    cursor: pointer;
+}
+
+.expand-btn:hover {
+    text-decoration: underline;
+}
+
+/* ===== Detail Tabs ===== */
+.details-tablist {
+    display: inline-flex;
+    margin-bottom: 10px;
+    padding: 2px;
+    border-radius: 999px;
+    background: #f3f4f6;
+}
+
+.details-tab-button {
+    padding: 4px 12px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: #6b7280;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.details-tab-button:hover {
+    color: #111827;
+}
+
+.details-tab-button[aria-selected="true"] {
+    background: #ffffff;
+    color: #111827;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.details-tab-button::after {
+    content: "";
+    position: absolute;
+    bottom: -1px;
+    left: 30%;
+    width: 40%;
+    height: 4px;
+    border-radius: 2px;
+    background: #832197ab;
+}
+
+.details-section {
+    max-height: 180px;
+    overflow: auto;
+}
+
+/* ===== Plot And Credits ===== */
+.movie-plot {
+    max-height: 110px;
+    padding-right: 8px;
+    overflow-y: auto;
+    font-size: 0.9rem;
+    opacity: 0.7;
+}
+
+.credits-panel-container {
+    overflow: auto;
+}
+
+.credits-panel {
+    margin-bottom: 8px;
+    padding: 5px 14px 10px;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    background: #f9fafb;
+    font-size: 0.9em;
+}
+
+.credits-panel h2 {
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.credits-panel ul {
+    margin: 0;
+    padding-left: 18px;
+}
+
+.credits-panel li {
+    color: #374151;
+}

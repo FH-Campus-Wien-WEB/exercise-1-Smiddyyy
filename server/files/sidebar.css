@@ -1,11 +1,8 @@
-@import url(base.css);
-
-/* ===== LAYOUT ===== */
+/* ===== Sidebar Layout ===== */
 body>aside {
     display: grid;
     grid-template-rows: 75px 60px 1fr auto;
     grid-template-columns: 1fr;
-
     grid-template-areas:
         "header"
         "title"
@@ -13,7 +10,6 @@ body>aside {
         "manage";
 }
 
-/* Areas */
 #sidebar-header {
     grid-area: header;
 }
@@ -30,7 +26,7 @@ body>aside {
     grid-area: manage;
 }
 
-/* ===== SIDEBAR CONTAINER ===== */
+/* ===== Sidebar Shell ===== */
 #filter-sidebar {
     background: #f9fafb;
     border-right: 1px solid #e5e7eb;
@@ -38,7 +34,10 @@ body>aside {
     overflow: hidden;
 }
 
-/* ===== HEADER ===== */
+body.sidebar-closed #filter-sidebar {
+    border: none;
+}
+
 #sidebar-header {
     display: flex;
     justify-content: flex-end;
@@ -59,7 +58,7 @@ body>aside {
     transform: scale(1.1);
 }
 
-/* ===== SEARCH ===== */
+/* ===== Sidebar Search ===== */
 #search-filter {
     padding: 4px 0;
 }
@@ -68,14 +67,11 @@ body>aside {
     display: flex;
     align-items: center;
     gap: 8px;
-
-    background: #ffffff;
-    border-radius: 999px;
     padding: 6px 12px;
-
     border: 1px solid #e5e7eb;
+    border-radius: 999px;
+    background: #ffffff;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-
     transition: all 0.2s ease;
 }
 
@@ -85,13 +81,12 @@ body>aside {
 }
 
 #search-input {
+    flex: 1;
     border: none;
     outline: none;
     background: transparent;
-
-    font-size: 1rem;
-    flex: 1;
     color: #111827;
+    font-size: 1rem;
 }
 
 #search-input::placeholder {
@@ -99,17 +94,17 @@ body>aside {
 }
 
 #search-filter svg {
-    color: #6b7280;
     flex-shrink: 0;
+    color: #6b7280;
 }
 
-/* ===== GENRE SECTION ===== */
+/* ===== Genre Filters ===== */
 #genre-filters {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    overflow-y: auto;
     padding-right: 4px;
+    overflow-y: auto;
 }
 
 #genre-filters h2 {
@@ -119,13 +114,12 @@ body>aside {
 }
 
 #genre-filters hr {
-    border: 0;
     height: 1px;
-    background: #e5e7eb;
     margin: 6px 0;
+    border: 0;
+    background: #e5e7eb;
 }
 
-/* ===== FILTER TAGS ===== */
 #available-filters,
 #active-filters {
     display: flex;
@@ -142,7 +136,6 @@ body>aside {
     transition: all 0.2s ease;
 }
 
-/* available filters */
 .filter-btn.available-filter {
     background: #dfdcef;
     color: #374151;
@@ -150,23 +143,21 @@ body>aside {
 }
 
 .filter-btn.available-filter:hover {
-    background: #c4b9e0;
     transform: translateY(-2px);
+    background: #c4b9e0;
     box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
 }
 
-/* active filters */
 .filter-btn.active-filter {
     background: #712f71;
     color: white;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
-/* remove "x" */
 .remove-filter {
-    font-size: 0.85rem;
-    color: #e5e7eb;
     margin-left: 4px;
+    color: #e5e7eb;
+    font-size: 0.85rem;
     cursor: pointer;
     transition: color 0.2s ease;
 }
@@ -175,40 +166,34 @@ body>aside {
     color: #ffffff;
 }
 
-/* ===== ACTION BUTTONS ===== */
+/* ===== Sidebar Actions ===== */
 #manage {
-    margin-top: 12px;
     display: flex;
     flex-direction: column;
     gap: 10px;
+    margin-top: 12px;
 }
 
 #manage button {
     padding: 10px;
-    border-radius: 999px;
     border: none;
+    border-radius: 999px;
     font-weight: 700;
     cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* primary */
 #addBtn {
     background: #712f71;
     color: white;
 }
 
-#addBtn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
-}
-
-/* secondary */
 #authBtn {
     background: #e5e7eb;
     color: #374151;
 }
 
+#addBtn:hover,
 #authBtn:hover {
     transform: translateY(-2px);
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);

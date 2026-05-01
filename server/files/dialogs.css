@@ -1,0 +1,175 @@
+/* ===== Shared Dialogs ===== */
+dialog {
+    padding: 0;
+    border: 0;
+    border-radius: 16px;
+    background: #ffffff;
+    color: #111827;
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.25);
+}
+
+dialog::backdrop {
+    background: rgba(17, 24, 39, 0.42);
+}
+
+/* ===== Login Dialog ===== */
+#loginDialog {
+    width: min(360px, 90vw);
+}
+
+#loginForm {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 24px;
+}
+
+#loginForm label {
+    color: #374151;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+#loginForm input {
+    padding: 10px 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    outline: none;
+    background: #f9fafb;
+    color: #111827;
+    font-size: 0.95rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+#loginForm input:focus {
+    border-color: #832197ab;
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(131, 33, 151, 0.18);
+}
+
+#loginForm button {
+    margin-top: 10px;
+    padding: 10px 14px;
+    border: none;
+    border-radius: 999px;
+    background: #4d1a51;
+    color: white;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+#loginForm button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+#loginForm button:active {
+    transform: translateY(0);
+}
+
+/* ===== Add Movie Dialog ===== */
+#addMovieDialog {
+    width: min(520px, 92vw);
+}
+
+#addMovieDialog>div {
+    padding: 22px;
+}
+
+.add-movie-search {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+#addMovieDialog-search-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 11px 40px 11px 14px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    outline: none;
+    background: #f9fafb;
+    color: #111827;
+    font-size: 0.95rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+#addMovieDialog-search-input:focus {
+    border-color: #832197ab;
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(131, 33, 151, 0.18);
+}
+
+.add-movie-search svg {
+    position: absolute;
+    right: 14px;
+    color: #6b7280;
+    pointer-events: none;
+}
+
+#addMovieDialog-suggestions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 360px;
+    margin-top: 14px;
+    overflow-y: auto;
+}
+
+.add-movie-suggestion {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    background: #f9fafb;
+}
+
+.add-movie-suggestion-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    text-align: left;
+}
+
+.add-movie-suggestion-title {
+    overflow: hidden;
+    color: #111827;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.add-movie-suggestion-year {
+    color: #6b7280;
+    font-size: 0.82rem;
+}
+
+.add-movie-suggestion-btn {
+    flex: 0 0 auto;
+    min-width: 66px;
+    padding: 8px 12px;
+    border: 0;
+    border-radius: 999px;
+    background: #4d1a51;
+    color: #ffffff;
+    font-size: 0.84rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.add-movie-suggestion-btn:disabled {
+    background: #e5e7eb;
+    color: #6b7280;
+    cursor: default;
+}
+
+.add-movie-suggestion-btn.remove-from-collection {
+    background: #edc9c9;
+    color: #9f1239;
+}

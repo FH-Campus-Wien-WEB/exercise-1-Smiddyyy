@@ -1,17 +1,10 @@
-#page-title {
-  text-align: center;
-  margin: 40px auto 30px;
-  font-size: 3rem;
-}
-
+/* ===== Page Grid ===== */
 body {
   margin: 0;
   min-height: 100vh;
-
   display: grid;
   grid-template-rows: 10vh 85vh 5vh;
   grid-template-columns: 250px 1fr;
-
   grid-template-areas:
     "aside header"
     "aside  main"
@@ -20,7 +13,6 @@ body {
   transition: grid-template-columns 0.3s ease;
 }
 
-/* Areas */
 body>header {
   grid-area: header;
 }
@@ -37,40 +29,23 @@ body>footer {
   grid-area: footer;
 }
 
-/* Styling */
-body>header {
-  background: #C0BFF8;
-  color: white;
-  padding: 1rem;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-body>aside {
-  background: #f5f5f5;
-  padding: 1rem;
-  border-right: 1px solid #ddd;
-  overflow: hidden;
-  /* prevents content sticking out when width = 0 */
-}
-
 body.sidebar-closed {
   grid-template-columns: 0px 1fr;
-  /* sidebar disappears */
 }
 
 body.sidebar-closed aside {
-  padding: 0px !important;
+  padding: 0 !important;
   border: none;
 }
 
-#sidebar-header {
-  padding-top: 5px;
-  padding-right: 15px;
+/* ===== Page Regions ===== */
+body>header {
   display: flex;
-  justify-content: right;
-  align-items: baseline;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: #C0BFF8;
+  color: white;
 }
 
 body>main {
@@ -87,54 +62,40 @@ body>footer {
   align-items: center;
 }
 
-/* Button */
+/* ===== Header Controls ===== */
+#page-title {
+  margin: 40px auto 30px;
+  font-size: 3rem;
+  text-align: center;
+}
+
 #menu-toggle {
-  font-size: 1.5rem;
-  background: none;
-  border: none;
-  color: white;
-  cursor: pointer;
   margin-left: 20px;
-}
-
-#close-sidebar {
-  font-size: 2rem;
-  background: none;
   border: none;
-  color: #4d1a51;
+  background: none;
+  color: white;
+  font-size: 1.5rem;
   cursor: pointer;
 }
 
-/* Exercise 4 */
-#movie-card-container.blurred {
-  filter: blur(6px);
-  pointer-events: none;
-  user-select: none;
-}
-
+/* ===== Session Greeting ===== */
 #user-greeting {
   display: none;
-  /* hidden by default */
 }
 
 #user-greeting.show {
-  display: block;
-
   position: fixed;
   top: 18px;
   right: 18px;
   z-index: 2000;
-
+  display: block;
   min-width: 320px;
   max-width: 380px;
-
-  background: white;
-  border-radius: 16px;
   padding: 18px 20px;
-
-  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.25);
   border-left: 6px solid #6c63ff;
-
+  border-radius: 16px;
+  background: white;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.25);
   animation: greetingSlideIn 0.4s ease-out;
 }
 
@@ -186,67 +147,4 @@ body>footer {
     opacity: 0;
     transform: translateX(120%);
   }
-}
-
-/* login dialog */
-#loginDialog {
-  width: min(360px, 90vw);
-  padding: 0;
-  border: none;
-  border-radius: 16px;
-  background: #ffffff;
-  color: #111827;
-  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.25);
-}
-
-#loginForm {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 24px;
-}
-
-#loginForm label {
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: #374151;
-}
-
-#loginForm input {
-  padding: 10px 12px;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  font-size: 0.95rem;
-  color: #111827;
-  background: #f9fafb;
-  outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-#loginForm input:focus {
-  border-color: #832197ab;
-  box-shadow: 0 0 0 3px rgba(131, 33, 151, 0.18);
-  background: #ffffff;
-}
-
-#loginForm button {
-  margin-top: 10px;
-  padding: 10px 14px;
-  border: none;
-  border-radius: 999px;
-  background: #4d1a51;
-  color: white;
-  font-size: 0.95rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-#loginForm button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-}
-
-#loginForm button:active {
-  transform: translateY(0);
 }
