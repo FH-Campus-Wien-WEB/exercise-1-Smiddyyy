@@ -1,7 +1,7 @@
 {
     "admin": {
         "firstName": "Ultimate",
-        "lastName": "Beeing",
+        "lastName": "Being",
         "_comment": "password: admin",
         "password": "$2a$12$I3kgdy.CVZEGh0itQXO5SOzaXmOXzxO82nr85hTFPQSFVilyTTqW.",
         "movies": "__all__"
